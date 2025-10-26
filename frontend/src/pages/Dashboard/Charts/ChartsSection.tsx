@@ -61,7 +61,7 @@ export const ChartsSection = ({ reviews }: ChartsSectionProps) => {
               fill="#8884d8"
               dataKey="value"
             >
-              {approvalData.map((entry, index) => (
+              {approvalData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
