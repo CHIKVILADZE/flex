@@ -1,0 +1,74 @@
+[
+  {
+    "id": 7453,
+    "type": "host-to-guest",
+    "status": "published",
+    "rating": null,
+    "publicReview": "Shane and family are wonderful! Would definitely host again :)",
+    "reviewCategory": [
+      {
+        "category": "cleanliness",
+        "rating": 10
+      },
+      {
+        "category": "communication",
+        "rating": 10
+      },
+      {
+        "category": "respect_house_rules",
+        "rating": 10
+      }
+    ],
+    "submittedAt": "2020-08-21 22:45:14",
+    "guestName": "Shane Finkelstein",
+    "listingName": "2B N1 A - 29 Shoreditch Heights"
+  },
+  {
+    "id": 7454,
+    "type": "guest-to-host",
+    "status": "published",
+    "rating": 9,
+    "publicReview": "Amazing apartment with great amenities! The location was perfect and host was very responsive.",
+    "reviewCategory": [
+      {
+        "category": "cleanliness",
+        "rating": 9
+      },
+      {
+        "category": "communication",
+        "rating": 10
+      },
+      {
+        "category": "value",
+        "rating": 8
+      }
+    ],
+    "submittedAt": "2023-09-15 14:30:00",
+    "guestName": "Emma Thompson",
+    "listingName": "1B W2 B - Modern Flat Camden"
+  },
+  {
+    "id": 7455,
+    "type": "guest-to-host",
+    "status": "published",
+    "rating": 8,
+    "publicReview": "Great stay! Apartment was clean and well-maintained. Would recommend.",
+    "reviewCategory": [
+      {
+        "category": "cleanliness",
+        "rating": 9
+      },
+      {
+        "category": "location",
+        "rating": 8
+      },
+      {
+        "category": "value",
+        "rating": 7
+      }
+    ],
+    "submittedAt": "2024-01-10 10:15:00",
+    "guestName": "Michael Chen",
+    "listingName": "2B N1 A - 29 Shoreditch Heights"
+  }
+]
