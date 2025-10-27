@@ -5,12 +5,16 @@ export const usePropertyPhotos = (listingId: string) => {
   return useQuery({
     queryKey: ['propertyPhotos', listingId],
     queryFn: async () => {
-      // Search for the property in Google Places
       const searchResponse = await reviewsApi.searchGooglePlaces(listingId);
       
       if (searchResponse.success && searchResponse.data.length > 0) {
-        // Find the best match
-        const exactMatch = searchResponse.data.find(place => 
+        const exactMatch = searchResponse.data.find((place: {
+          name: string;
+          photoUrls?: string[];
+          formatted_address: string;
+          rating: number;
+          user_ratings_total: number;
+        }) => 
           place.name.toLowerCase().includes(listingId.toLowerCase()) ||
           listingId.toLowerCase().includes(place.name.toLowerCase())
         );
@@ -34,7 +38,7 @@ export const usePropertyPhotos = (listingId: string) => {
       };
     },
     enabled: !!listingId,
-    staleTime: 24 * 60 * 60 * 1000, // Cache for 24 hours
+    staleTime: 24 * 60 * 60 * 1000, 
     retry: 1
   });
 };
