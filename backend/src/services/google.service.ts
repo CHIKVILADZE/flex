@@ -20,6 +20,8 @@ export interface GooglePlaceDetails {
   rating: number;
   user_ratings_total: number;
   reviews: GoogleReview[];
+  formatted_address?: string;
+  photoUrls?: string[];
 }
 
 export class GoogleReviewsService {
@@ -33,90 +35,105 @@ export class GoogleReviewsService {
     }
   }
 
-  async getPlaceDetails(placeId: string): Promise<GooglePlaceDetails | null> {
-    if (!this.apiKey) {
-      logger.error('Google Places API key not configured');
-      return null;
-    }
-
-    try {
-      logger.info('Fetching Google Place details', { placeId });
-      
-      const response = await axios.get(`${this.baseUrl}/details/json`, {
-        params: {
-          place_id: placeId,
-          fields: 'place_id,name,rating,user_ratings_total,reviews',
-          key: this.apiKey,
-        },
-      });
-
-      if (response.data.status !== 'OK') {
-        logger.error('Google Places API error', { 
-          status: response.data.status,
-          error_message: response.data.error_message 
-        });
+    async getPlaceDetails(placeId: string): Promise<GooglePlaceDetails | null> {
+      if (!this.apiKey) {
+        logger.error('Google Places API key not configured');
         return null;
       }
 
-      const result = response.data.result;
-      logger.info('Google Place details fetched successfully', { 
-        name: result.name,
-        reviewsCount: result.reviews?.length || 0 
-      });
-
-      return {
-        place_id: result.place_id,
-        name: result.name,
-        rating: result.rating || 0,
-        user_ratings_total: result.user_ratings_total || 0,
-        reviews: result.reviews || [],
-      };
-    } catch (error: any) {
-      logger.error('Google Places API request failed', { 
-        error: error.message,
-        placeId 
-      });
-      return null;
-    }
-  }
-
-  async searchPlaces(query: string): Promise<any[]> {
-    if (!this.apiKey) {
-      logger.error('Google Places API key not configured');
-      return [];
-    }
-
-    try {
-      logger.info('Searching Google Places', { query });
-      
-      const response = await axios.get(`${this.baseUrl}/textsearch/json`, {
-        params: {
-          query,
-          key: this.apiKey,
-        },
-      });
-
-      if (response.data.status !== 'OK') {
-        logger.error('Google Places search error', { 
-          status: response.data.status,
-          error_message: response.data.error_message 
+      try {
+        logger.info('Fetching Google Place details', { placeId });
+        
+        const response = await axios.get(`${this.baseUrl}/details/json`, {
+          params: {
+            place_id: placeId,
+            fields: 'place_id,name,rating,user_ratings_total,reviews,photos,formatted_address',
+            key: this.apiKey,
+          },
         });
-        return [];
+
+        if (response.data.status !== 'OK') {
+          logger.error('Google Places API error', { 
+            status: response.data.status,
+            error_message: response.data.error_message 
+          });
+          return null;
+        }
+
+        const result = response.data.result;
+        
+        const placeWithPhotos = {
+          place_id: result.place_id,
+          name: result.name,
+          rating: result.rating || 0,
+          user_ratings_total: result.user_ratings_total || 0,
+          reviews: result.reviews || [],
+          formatted_address: result.formatted_address,
+          photoUrls: result.photos ? result.photos.map((photo: any) => 
+            `${this.baseUrl}/photo?maxwidth=1200&photoreference=${photo.photo_reference}&key=${this.apiKey}`
+          ) : []
+        };
+
+        logger.info('Google Place details fetched successfully', { 
+          name: result.name,
+          photosCount: result.photos?.length || 0 
+        });
+
+        return placeWithPhotos;
+      } catch (error: any) {
+        logger.error('Google Places API request failed', { 
+          error: error.message,
+          placeId 
+        });
+        return null;
       }
+    }
 
-      logger.info('Google Places search successful', { 
-        resultsCount: response.data.results.length 
-      });
+async searchPlaces(query: string): Promise<any[]> {
+  if (!this.apiKey) {
+    logger.error('Google Places API key not configured');
+    return [];
+  }
 
-      return response.data.results;
-    } catch (error: any) {
-      logger.error('Google Places search failed', { 
-        error: error.message,
-        query 
+  try {
+    logger.info('Searching Google Places', { query });
+    
+    const response = await axios.get(`${this.baseUrl}/textsearch/json`, {
+      params: {
+        query,
+        fields: 'place_id,name,formatted_address,rating,user_ratings_total,photos,geometry',
+        key: this.apiKey,
+      },
+    });
+
+    if (response.data.status !== 'OK') {
+      logger.error('Google Places search error', { 
+        status: response.data.status,
+        error_message: response.data.error_message 
       });
       return [];
     }
+
+    const resultsWithPhotos = response.data.results.map((place: any) => ({
+      ...place,
+      photoUrls: place.photos ? place.photos.map((photo: any) => 
+        `${this.baseUrl}/photo?maxwidth=1200&photoreference=${photo.photo_reference}&key=${this.apiKey}`
+      ) : []
+    }));
+
+    logger.info('Google Places search successful', { 
+      resultsCount: resultsWithPhotos.length 
+    });
+
+    return resultsWithPhotos;
+  } catch (error: any) {
+    logger.error('Google Places search failed', { 
+      error: error.message,
+      query 
+    });
+    return [];
   }
+}
 
   async searchFlexLivingProperties(): Promise<any[]> {
     const queries = [

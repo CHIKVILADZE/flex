@@ -58,7 +58,7 @@ export const GoogleReviewsSearch = () => {
         Import Google Reviews
       </h3>
       
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           type="text"
           value={query}
@@ -70,7 +70,7 @@ export const GoogleReviewsSearch = () => {
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 sm:w-auto w-full"
         >
           <Search className="w-4 h-4" />
           {isLoading ? 'Searching...' : 'Search'}
